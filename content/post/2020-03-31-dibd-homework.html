@@ -1,0 +1,116 @@
+---
+title: COVID-19 Country Map Homework
+author: Jiachun Li
+date: '2020-03-31'
+slug: dibd-homework
+categories:
+  - R
+tags: []
+---
+
+
+
+<div id="利用json数据绘制国家疫情地图" class="section level1">
+<h1>利用JSON数据绘制国家疫情地图</h1>
+<div id="首先导入我们需要的几个-r-包" class="section level2">
+<h2>首先导入我们需要的几个 R 包：</h2>
+<pre class="r"><code>library(dplyr) #数据预处理</code></pre>
+<pre><code>## Warning: 程辑包&#39;dplyr&#39;是用R版本3.6.3 来建造的</code></pre>
+<pre><code>## 
+## 载入程辑包：&#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>library(maptools) #用于读取地图矢量数据</code></pre>
+<pre><code>## Warning: 程辑包&#39;maptools&#39;是用R版本3.6.3 来建造的</code></pre>
+<pre><code>## 载入需要的程辑包：sp</code></pre>
+<pre><code>## Warning: 程辑包&#39;sp&#39;是用R版本3.6.3 来建造的</code></pre>
+<pre><code>## Checking rgeos availability: TRUE</code></pre>
+<pre class="r"><code>require(rgdal) #读取地图数据</code></pre>
+<pre><code>## 载入需要的程辑包：rgdal</code></pre>
+<pre><code>## Warning: 程辑包&#39;rgdal&#39;是用R版本3.6.3 来建造的</code></pre>
+<pre><code>## rgdal: version: 1.4-8, (SVN revision 845)
+##  Geospatial Data Abstraction Library extensions to R successfully loaded
+##  Loaded GDAL runtime: GDAL 2.2.3, released 2017/11/20
+##  Path to GDAL shared files: D:/Program Files/R/R-3.6.2/library/rgdal/gdal
+##  GDAL binary built with GEOS: TRUE 
+##  Loaded PROJ.4 runtime: Rel. 4.9.3, 15 August 2016, [PJ_VERSION: 493]
+##  Path to PROJ.4 shared files: D:/Program Files/R/R-3.6.2/library/rgdal/proj
+##  Linking to sp version: 1.4-1</code></pre>
+<pre class="r"><code>library(ggplot2) #绘制地图</code></pre>
+<pre><code>## Warning: 程辑包&#39;ggplot2&#39;是用R版本3.6.3 来建造的</code></pre>
+<pre class="r"><code>library(grid) #图形嵌套
+library(plyr)</code></pre>
+<pre><code>## Warning: 程辑包&#39;plyr&#39;是用R版本3.6.3 来建造的</code></pre>
+<pre><code>## ------------------------------------------------------------------------------</code></pre>
+<pre><code>## You have loaded plyr after dplyr - this is likely to cause problems.
+## If you need functions from both plyr and dplyr, please load plyr first, then dplyr:
+## library(plyr); library(dplyr)</code></pre>
+<pre><code>## ------------------------------------------------------------------------------</code></pre>
+<pre><code>## 
+## 载入程辑包：&#39;plyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:dplyr&#39;:
+## 
+##     arrange, count, desc, failwith, id, mutate, rename, summarise,
+##     summarize</code></pre>
+<pre class="r"><code>library(sf)</code></pre>
+<pre><code>## Warning: 程辑包&#39;sf&#39;是用R版本3.6.3 来建造的</code></pre>
+<pre><code>## Linking to GEOS 3.6.1, GDAL 2.2.3, PROJ 4.9.3</code></pre>
+<pre class="r"><code>library(readr)</code></pre>
+<pre><code>## Warning: 程辑包&#39;readr&#39;是用R版本3.6.3 来建造的</code></pre>
+</div>
+<div id="导入世界地图并把-crs-转换成-4326其实这份数据的-crs-就是-4326" class="section level2">
+<h2>导入世界地图并把 crs 转换成 4326（其实这份数据的 crs 就是 4326）：</h2>
+<pre class="r"><code>worldmap &lt;- read_sf(&quot;https://img.hcharts.cn/mapdata/custom/world-palestine-highres.geo.json&quot;) %&gt;% st_transform(crs = 4326)</code></pre>
+</div>
+<div id="把疫情数据读取进来并根据经纬度坐标把这个数据框转换成-sf-对象同样使用-4326" class="section level2">
+<h2>把疫情数据读取进来并根据经纬度坐标把这个数据框转换成 sf 对象，同样使用 4326</h2>
+<pre class="r"><code>CovURL &lt;- RCurl::getURL(&quot;https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv&quot;)
+datacase &lt;- read.csv(text = CovURL, check.names = F)
+col_name &lt;- colnames(datacase)
+Date &lt;- col_name[length(col_name)]
+con_sf &lt;- read.csv(text = CovURL, check.names = F) %&gt;%
+    select(&quot;Country/Region&quot;, Lat, Long, Date) %&gt;%
+    `colnames&lt;-`(c(&quot;Country&quot;, &quot;lat&quot;, &quot;long&quot;, &quot;con&quot;)) %&gt;%
+    st_as_sf(coords = c(&quot;long&quot;, &quot;lat&quot;), crs = 4326)</code></pre>
+<pre><code>## Note: Using an external vector in selections is ambiguous.
+## i Use `all_of(Date)` instead of `Date` to silence this message.
+## i See &lt;https://tidyselect.r-lib.org/reference/faq-external-vector.html&gt;.
+## This message is displayed once per session.</code></pre>
+<p>con_sf2 &lt;- read.csv(text = CovURL, check.names = F) %&gt;%
+select(“Country/Region”, Date) %&gt;%
+<code>colnames&lt;-</code>(c(“Country”, “con”))</p>
+<p>con_df &lt;- aggregate(con ~ Country, data = con_sf2, sum)</p>
+</div>
+<div id="最后绘制地图" class="section level2">
+<h2>最后绘制地图：</h2>
+<pre class="r"><code>mybreaks &lt;- c(1, 20, 100, 1000, 50000)
+ggplot(worldmap) +
+    geom_sf(size = 0.1, color = &quot;black&quot;, fill = NA) +
+    geom_sf(data = con_sf, aes(size = con,color = con,)) +
+    theme(panel.grid = element_blank()) +
+    scale_size_continuous(name = &quot;Confirmed cases&quot;,
+                          trans = &quot;log&quot;,
+                          range = c(1, 7),
+                          breaks = mybreaks,
+                          labels = c(&quot;1-19&quot;, &quot;20-99&quot;, &quot;100-999&quot;, &quot;1,000-49,999&quot;, &quot;50,000~&quot;)) +
+    scale_color_viridis_c(option = &quot;inferno&quot;,
+                          name = &quot;Confirmed cases&quot;,
+                          trans = &quot;log&quot;,
+                          breaks = mybreaks,
+                          labels = c(&quot;1-19&quot;, &quot;20-99&quot;, &quot;100-999&quot;, &quot;1,000-49,999&quot;, &quot;50,000&quot;)) +
+    guides(color = guide_legend()) +
+    labs(title = &quot;Global distribution of COVID-19&quot;,
+         subtitle = paste0(&quot;Deadline: &quot;, &quot;0&quot;,Date,&quot;20&quot;),
+         caption = &quot;Data source: CSSEGISandData/COVID-19: Novel Coronavirus (COVID-19) Cases, provided by JHU CSSE\nhttps://github.com/CSSEGISandData/COVID-19\nDrawing：Jiachun Li&quot;)</code></pre>
+<pre><code>## Warning: Transformation introduced infinite values in discrete y-axis
+
+## Warning: Transformation introduced infinite values in discrete y-axis</code></pre>
+<pre><code>## Warning in sqrt(x): 产生了NaNs</code></pre>
+<pre><code>## Warning: Removed 2 rows containing missing values (geom_sf).</code></pre>
+<p><img src="/post/2020-03-31-dibd-homework_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+</div>
