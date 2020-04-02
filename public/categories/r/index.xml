@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>R on DIBD Homework</title>
+    <link>/categories/r/</link>
+    <description>Recent content in R on DIBD Homework</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 31 Mar 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/categories/r/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>COVID-19 Country Map Homework</title>
+      <link>/2020/03/31/dibd-homework/</link>
+      <pubDate>Tue, 31 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/03/31/dibd-homework/</guid>
+      <description>利用JSON数据绘制国家疫情地图首先导入我们需要的几个 R 包：library(dplyr) #数据预处理## Warning: 程辑包&amp;#39;dplyr&amp;#39;是用R版本3.6.3 来建造的## ## 载入程辑包：&amp;#39;dplyr&amp;#39;## The following objects are masked from &amp;#39;package:stats&amp;#39;:## ## filter, lag## The following objects are masked from &amp;#39;package:base&amp;#39;:## ## intersect, setdiff, setequal, unionlibrary(maptools) #用于读取地图矢量数据## Warning: 程辑包&amp;#39;maptools&amp;#39;是用R版本3.6.3 来建造的## 载入需要的程辑包：sp## Warning: 程辑包&amp;#39;sp&amp;#39;是用R版本3.6.3 来建造的## Checking rgeos availability: TRUErequire(rgdal) #读取地图数据## 载入需要的程辑包：rgdal## Warning: 程辑包&amp;#39;rgdal&amp;#39;是用R版本3.6.3 来建造的## rgdal: version: 1.4-8, (SVN revision 845)## Geospatial Data Abstraction Library extensions to R successfully loaded## Loaded GDAL runtime: GDAL 2.</description>
+    </item>
+    
+  </channel>
+</rss>
